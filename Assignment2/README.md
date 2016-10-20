@@ -21,7 +21,7 @@ If the visitor is logged in as a regular user, all pages except admin.phpshould 
 
 If the visitor is logged in as an administrator, all pages should be accessible. 
 
-Trying to access a page where access is denied should display an appropriate error message, for example, \you need to be logged in as an administrator to access this page" instead of displaying the regular contents of the page.
+Trying to access a page where access is denied should display an appropriate error message, for example, "you need to be logged in as an administrator to access this page" instead of displaying the regular contents of the page.
 
 ##Page Contents
 
@@ -31,7 +31,7 @@ All pages should have links to the other accessible pages, and no link to not ac
 
 All pages should have some text in it indicating where we are.
 
-The registration page should have a form with a field named \username", a field named \password", and a submit button.
+The registration page should have a form with a field named "username", a field named "password", and a submit button.
 
 ##User registration
 

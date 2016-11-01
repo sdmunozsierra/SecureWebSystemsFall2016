@@ -1,108 +1,85 @@
-<?php //login webpage
+<?php
+// login.php
 /**
- * Created by PhpStorm.
- * User: xerg
- * Date: 10/25/2016
- * Time: 7:24 PM
+ * It works as the authentification page
  */
-
-// Start the session
-session_start();
-?>
-<!DOCTYPE html>
-<html>
-<title>"Login2"</title>
-<body>
-
-<?php
-// Set session variables
-$_SESSION["favcolor"] = "green";
-$_SESSION["favanimal"] = "cat";
-
-echo "Session variables are set.";
-?>
-
-// create a form with fields username and password
-<form action="login2.php" method="post">
-    Username: <input type="text" name="username"><br>
-    Password: <input type="text" name="password"><br>
-    <input type="submit">
-</form>
-<?php
-//Displays the username and password
-if (isset($_SESSION['username'])) $username = $_COOKIE['username']; //Save username
-if (isset($_SESSION['password'])) $password = $_COOKIE['password']; //Save password
-
-echo "Username (From variable) .$username";
-echo "Password (From variable).$password";
-
-
-
-?>
-
-
-<?php
-// remove all session variables
-session_unset();
-// destroy the session
-session_destroy();
-?>
-
-</body>
-</html>
-
 /*
-<?php //authenticate2.php
-require_once 'login.php'; //database information
-//Create a new mysqli connection
-$conn = new mysqli($hn, $un, $pw, $db);
-if($conn->connect_error) die ($conn->connect_error); //kill connection if error
+ * Info:
+ * Do not use the HTTP authentication headers described in our textbook.
+ * When signing in, check the username and password against the registered users table.
+ * Then use PHP sessions to keep the user logged in.
+ * Make sure you destroy the session when the user signs out.
+ */
+require_once 'login.php'; // require login info
 
-if (isset($_SERVER['PHP_AUTH_USER']) &&
-    isset($_SERVER['PHP_AUTH_PW']))
-{
-    $un_temp = mysql_entities_fix_string($conn, $_SERVER['PHP_AUTH_USER']);
-    $pw_temp = mysql_entities_fix_string($conn, $_SERVER['PHP_AUTH_PW']);
-    //If they both exist, they represent the username and password entered by a user into an authentication prompt.
+$connection = new mysqli ( $db_hostname, $db_username, $db_password, $db_database );
+if ($connection->connect_error)
+	die ( $connection->connect_error );
+	
+	// Print form for login
+echo <<<_END
+<form action="login.php" method="post">
+	<fieldset>
+		<legend>Login information:</legend>
+			Username:<br>
+			<input type="text" name="username"><br>
+			Password:<br>
+			<input type="text" name="password"><br>
+			<input type="submit" value="Submit">
+		</legend>
+	</fieldset>
+</form> 
+_END;
 
-    $query = "SELECT * FROM users WHERE username='$un_temp'";
-    $result = $connection->query($query);
-    if (!$result) die($connection->error);
-    elseif ($result->num_rows)
-    {
-        $row = $result->fetch_array(MYSQLI_NUM);
-        $result->close();
-        $salt1 = "qm&h*";
-        $token = hash('ripemd128', "$salt1$pw_temp$salt2");
-        if ($token == $row[3])
-        {
-            session_start();
-            $_SESSION['username'] = $un_temp;
-            $_SESSION['password'] = $pw_temp;
-            $_SESSION['forename'] = $row[0];
-            $_SESSION['surname'] = $row[1];
-            echo "$row[0] $row[1] : Hi $row[0],
-you are now logged in as '$row[2]'";
-            die ("<p><a href=continue.php>Click here to continue</a></p>");
-        }
-        else die("Invalid username/password combination");
-    }
-    else die("Invalid username/password combination");
+// Debuggin purposes only -->
+echo 'Entered Fields:<br>UN: ' . htmlspecialchars ( $_POST ["username"] ) . '!' .
+		'PW: ' . htmlspecialchars ( $_POST ["password"] );
+
+// If the if not working change "" to ''
+if (isset ( $_POST ["username"] ) && isset ( $_POST ["password"] )) {
+	// Sanitize the input
+	$un_temp = mysql_entities_fix_string ( $connection, $_POST ["username"] );
+	$pw_temp = mysql_entities_fix_string ( $connection, $_POST ["password"] );
 }
-else
-{
-    header('WWW-Authenticate: Basic realm="Restricted Section"');
-    header('HTTP/1.0 401 Unauthorized');
-    die ("Please enter your username and password");
+
+$query = "SELECT * FROM users WHERE username='$un_temp'"; // create query
+$result = $connection->query ( $query ); // save query
+
+if (! $result) die ( $connection->error ); // kill if no username found
+
+elseif ($result->num_rows) {
+	$row = $result->fetch_array ( MYSQLI_NUM ); // save value in $row
+	$result->close (); // destroy $result from $query
+	$salt1 = "random"; // random salt
+	$salt2 = $un_temp; // user salt
+	$token = hash ( 'ripemd128', "$salt1$salt2$pw_temp" ); // random salt, user salt, pw
+	                                                       
+	// Validate password
+	if ($token == $row [2]) { // my DB [0]FirstName [1]Uname [2]Pass
+		/**
+		 * Juice
+		 */
+		session_start (); // CREATE A SESSION!!!
+		$_SESSION ['username'] = $un_temp;
+		$_SESSION ['password'] = $pw_temp;
+		$_SESSION ['forename'] = $row [0];
+		echo "Hi $row[0],you are now logged in as '$row[1]'";
+			die ( "<p><a href='continue.php'>Click here to continue</a></p>" );
+		// elseif($token == admin password){TODO};//
+	} else
+		die ( "Invalid username/password combination" );
+} else
+	die ( "Invalid username/password combination" );
+
+$connection->close (); //end connection
+
+//Functions
+function mysql_entities_fix_string($connection, $string) {
+	return htmlentities ( mysql_fix_string ( $connection, $string ) );
 }
-$connection->close();
-function mysql_entities_fix_string($connection, $string)
-{
-    return htmlentities(mysql_fix_string($connection, $string));
-}
-function mysql_fix_string($connection, $string)
-{
-    if (get_magic_quotes_gpc()) $string = stripslashes($string);
-    return $connection->real_escape_string($string);
+function mysql_fix_string($connection, $string) {
+	if (get_magic_quotes_gpc ())
+		$string = stripslashes ( $string );
+	return $connection->real_escape_string ( $string );
 }
 ?>

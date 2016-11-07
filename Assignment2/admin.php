@@ -1,17 +1,24 @@
 <?php //admin.php
-/**
- * All pages should have a sign in button if the visitor is not signed in, and a sign out button otherwise.
- * All pages should have links to the other accessible pages, and no link to not accessible pages.
- * All pages should have some text in it indicating where we are.
- *
- * If the visitor is logged in as an administrator, all pages should be accessible.
- *
- * For the admin account, create an account with admin as user name and nimda339 as password.
- * This will be the only administrator account.
- */
+session_start();
 
-echo "This is the admin page";
-//add sign in button
 
-//if sign in add logout button
+echo "<!DOCTYPE html>\n<html><head><title>Admin Page</title>";
+if (isset($_SESSION['username']) && $_SESSION['username'] == 'admin'){
+    //admin logged in
+    echo "<body><h1>Administrator Page</h1><p>Admin stuff...</p>";
+    echo <<<_END
+    <form action="logout.php">
+    <input type="submit" value="Log me out" /> <!--Value: Name on button-->
+    </form>
+    <a href='mainpage.php'>main page</a><br>
+    </body></html>
 
+_END;
+}
+
+else{
+    //not authorized
+    echo "<body>You have not permission to be here...";
+    echo "<br>Go to <a href='mainpage.php'>mainpage</a></br>or</or><br>Go to <a href='login.php'>login</a>.";
+    echo "</body></html>";
+}

@@ -1,33 +1,22 @@
 <?php //user.php
-/** Will have a small count down timer based on JavaScript */
-echo <<<_HEAD
-<!DOCTORTYPE html>
-<head>
-<title>User Page</title>
-</head>
-<body>
-_HEAD
+session_start();
 
-echo "<h1>Countdown until Christmas</h1><br>";
-echo '<script type="text/javascript" src="countdown.js"></script>';
+echo "<!DOCTYPE html>\n<html><head><title>Admin Page</title>";
+if (isset($_SESSION['username'])){
+    //user logged in
+    echo "<body><h1>User Page</h1><p>User stuff...</p>";
+    echo <<<_END
+    <a href='mainpage.php'>main page</a><br><br>
 
-?>
+    <form action="logout.php">
+    <input type="submit" value="Log me out" /> <!--Value: Name on button-->
+    </form></body></html>
+_END;
+}
 
-//ADD THE FOLLOWING
-<?php // continue.php
-  session_start();
-  if (isset($_SESSION['username']))
-  {
-    $username = $_SESSION['username'];
-    $password = $_SESSION['password'];
-    $forename = $_SESSION['forename'];
-    $surname  = $_SESSION['surname'];
-    echo "Welcome back $forename.<br>
-          Your full name is $forename $surname.<br>
-          Your username is '$username'
-          and your password is '$password'.";
-  }
-  else echo "Please <a href='authenticate2.php'>cli
-ck here</a> to log 
-in.";
-?>
+else{
+    //not authorized
+    echo "<body>You have not permission to be here...";
+    echo "<br>Go to <a href='mainpage.php'>mainpage</a></br>or</or><br>Go to <a href='login.php'>login</a>.";
+    echo "</body></html>";
+}

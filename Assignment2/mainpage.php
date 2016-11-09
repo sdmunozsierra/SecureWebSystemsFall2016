@@ -18,7 +18,7 @@ if (isset($_SESSION['username']) && $_SESSION['username'] == 'admin'){
 //_END;
     echo <<<_END
     <body><h1>Main Page</h1>
-    <p> Your current status is: <b>Administrator</b><br>
+    <p> Your current status is: <b style="color:red;">Administrator</b><br>
     Available links:<br>
     <a href='mainpage.php'>main page</a> (This page)<br>
     <a href='admin.php'>admin page</a><br>
@@ -41,7 +41,7 @@ elseif(isset($_SESSION['username'])){
     //Logged in as a user
     echo <<<_END
     <body><h1>Main Page</h1>
-    <p> Your current status is: <b>User</b><br>
+    <p> Your current status is: <b style="color:red;">User</b><br>
     Available links:<br>
     <a href='mainpage.php'>main page</a> (This page)<br>
     <a href='user.php'>user page</a><br>
@@ -60,7 +60,7 @@ else{
     echo <<<_END
 
     <body><h1>Main Page</h1>
-    <p> Your current status is: <b>Visitor</b><br>
+    <p> Your current status is: <b style="color:red;">Visitor</b><br>
     Available links:<br>
     <a href='mainpage.php'>main page</a> (This page)<br>
     <a href='register.php'>register page</a><br>
